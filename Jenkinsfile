@@ -4,6 +4,7 @@ pipeline {
     scannerHome = tool name: 'sonar_scanner_dotnet'
     username = 'parasjain01'
     registry = 'paras22/nagp-devops-assign-1'
+    GKE_CREDENTIALS_ID = 'gcpcreds'
   }
   
   stages {
@@ -109,7 +110,19 @@ pipeline {
     }
   }
   stage('Kubernetes Deployment') {
+	  
     steps {
+      script {
+                    withCredentials ([file(credentialsId: env.GKE_CREDENTIALS_ID, variable: 'GC_KEY')]) {
+                        echo 'Authenticating From Google Cloud.....'
+                        bat "gcloud auth activate-service-account --key-file=${GC_KEY}"
+                        echo 'Authentication complete'
+
+                        echo 'Connecting To Cluster'
+                        bat "gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project optimistic-yeti-321307"
+                        echo 'Cluster Connection complete'
+                    }
+                }
       bat "kubectl apply -f config.yaml --namespace=kubernetes-cluster-${username}"
       bat "kubectl apply -f deployment.yaml --namespace=kubernetes-cluster-${username}"
     }
