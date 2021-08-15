@@ -5,9 +5,7 @@ pipeline {
     username = 'parasjain01'
     registry = 'paras22/nagp-devops-assign-1'
   }
-  tools {
-    msbuild 'MSBuild'
-  }
+  
   stages {
     stage('Checkout') {
       steps {
