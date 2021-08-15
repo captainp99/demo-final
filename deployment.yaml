@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnet-nagp-deployment-master
+  namespace: kubernetes-cluster-parasjain01
+  labels:
+    app: dotnet-nagp-master
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: dotnet-nagp-master
+  template:
+    metadata:
+      labels:
+        app: dotnet-nagp-master
+    spec:
+      containers:
+        - name: dotnet-nagp-master
+          envFrom:
+            - configMapRef:
+                name: app-settings
+          image: paras22/nagp-devops-assign-1:latest
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dotnet-nagp-master
+  namespace: kubernetes-cluster-parasjain01
+spec:
+  type: LoadBalancer
+  selector:
+    app: dotnet-nagp-master
+  ports:
+    - port: 80
+      protocol: TCP
+      nodePort: 30157
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: dotnet-nagp-master-autoscale
+  namespace: kubernetes-cluster-parasjain01
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: dotnet-nagp-deployment-master
+  minReplicas: 1
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 1

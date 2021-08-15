@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: app-settings
+    namespace: kubernetes-cluster-parasjain01
+data:
+    NAMESPACE: kubernetes-cluster-parasjain01
